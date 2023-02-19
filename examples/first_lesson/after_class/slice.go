@@ -28,14 +28,18 @@ func Add(s []int, index int, value int) []int {
 	l := len(s)
 	//result :=[]int{}
 	//fmt.Println(result)
+
 	if index < 0 {
+		// 最前面插入
 	} else if index == 0 {
 		tmp := append([]int{}, value)
 		s = append(tmp, s[0:]...)
+		// 中间插入
 	} else if index <= l-1 && index > 0 {
 		tmp := append([]int{}, s[index:]...)
 		s = append(s[:index], value)
 		s = append(s, tmp...)
+		// 最后插入
 	} else {
 		s = append(s[:index], value)
 	}
