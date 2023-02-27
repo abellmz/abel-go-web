@@ -1,10 +1,34 @@
-package oneclass
+package main
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
-func main() {
-
+func home(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "这是主页")
 }
 
-func order(w http.ResponseWriter, r http.Request) {
+func user(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "这是用户")
+}
+
+func createUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "这是创建用户")
+}
+
+func order(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "这是订单")
+}
+
+func main() {
+	server := NewHttpServer("test-server")
+
+	server.Route("/", home)
+	server.Route("/body/once", user)
+	server.Route("/body/multi", createUser)
+	server.Route("/url/query", order)
+	server.Route("/user/sigup", SignUp)
+	server.Start("8080")
+
 }
