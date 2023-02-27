@@ -24,11 +24,14 @@ func order(w http.ResponseWriter, r *http.Request) {
 func main() {
 	server := NewHttpServer("test-server")
 
-	server.Route("/", home)
-	server.Route("/body/once", user)
-	server.Route("/body/multi", createUser)
-	server.Route("/url/query", order)
+	//server.Route("/", home)
+	//server.Route("/body/once", user)
+	//server.Route("/body/multi", createUser)
+	//server.Route("/url/query", order)
 	server.Route("/user/sigup", SignUp)
-	server.Start("8080")
+	server.Start(":8080")
+	//if err := http.ListenAndServe(":8080", nil); err != nil {
+	//	panic(err)
+	//}
 
 }

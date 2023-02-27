@@ -36,9 +36,20 @@ func (c *Context) WriteJson(code int, resp interface{}) error {
 }
 
 // 以下为扩展的便捷方法
-func (c *Context) okJson(resp interface{}) error {
+func (c *Context) OkJson(resp interface{}) error {
 	return c.WriteJson(http.StatusOK, resp)
 }
 func (c *Context) SystemErrorJson(resp interface{}) error {
 	return c.WriteJson(http.StatusInternalServerError, resp)
+}
+
+func (c *Context) BadRequest(resp interface{}) error {
+	return c.WriteJson(http.StatusBadRequest, resp)
+}
+
+func NewContext(writer http.ResponseWriter, request *http.Request) *Context {
+	return &Context{
+		R: request,
+		W: writer,
+	}
 }

@@ -6,7 +6,7 @@ import (
 )
 
 type Server interface {
-	Route(pattern string, handleFunc http.HandlerFunc)
+	Route(pattern string, handleFunc func(ctx *Context))
 	Start(address string) error
 }
 
@@ -15,8 +15,11 @@ type sdkHttpServer struct {
 }
 
 // Route 路由注册
-func (s *sdkHttpServer) Route(pattern string, handleFunc http.HandlerFunc) {
-	http.HandleFunc(pattern, handleFunc)
+func (s *sdkHttpServer) Route(pattern string, handleFunc func(ctx *Context)) {
+	http.HandleFunc(pattern, func(writer http.ResponseWriter, request *http.Request) {
+		ctx := NewContext(writer, request)
+		handleFunc(ctx)
+	})
 }
 
 func (s *sdkHttpServer) Start(address string) error {
@@ -29,16 +32,14 @@ func NewHttpServer(name string) Server {
 	}
 }
 
-func SignUp(w http.ResponseWriter, r *http.Request) {
+// func SignUp(w http.ResponseWriter, r *http.Request) {
+func SignUp(ctx *Context) {
 	req := &signUpReq{}
-	ctx := &Context{
-		W: w,
-		R: r,
-	}
 	err := ctx.REadJson(req)
 	if err != nil {
-		fmt.Fprintf(w, "err: %v", err)
-		return
+		//fmt.Fprintf(w, "err: %v", err)
+		//return
+		ctx.BadRequest(err)
 	}
 	//body,err := io.ReadAll(r.Body)
 	//if err != nil {
