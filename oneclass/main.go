@@ -28,7 +28,7 @@ func main() {
 	//server.Route("/body/once", user)
 	//server.Route("/body/multi", createUser)
 	//server.Route("/url/query", order)
-	server.Route("/user/sigup", SignUp)
+	server.Route(http.MethodGet, "/user/sigup", SignUp)
 	server.Start(":8080")
 	//if err := http.ListenAndServe(":8080", nil); err != nil {
 	//	panic(err)

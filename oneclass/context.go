@@ -11,7 +11,7 @@ type Context struct {
 	R *http.Request
 }
 
-func (c *Context) REadJson(req interface{}) error {
+func (c *Context) ReadJson(req interface{}) error {
 	r := c.R
 	// 读取body，处理json
 	body, err := io.ReadAll(r.Body)

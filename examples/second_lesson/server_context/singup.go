@@ -1,4 +1,4 @@
-package server_context
+package main
 
 import (
 	"encoding/json"
