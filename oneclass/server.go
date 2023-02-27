@@ -7,13 +7,14 @@ import (
 
 type Server interface {
 	// method Post,Get,Put,Delete
-	Route(method string, pattern string, handleFunc func(ctx *Context))
+	//Route(method string, pattern string, handleFunc func(ctx *Context))
+	Routable
 	Start(address string) error
 }
 
 type sdkHttpServer struct {
 	Name    string
-	handler *HandlerBasedOnMap
+	handler Handler
 }
 
 // Route 路由注册
@@ -22,19 +23,22 @@ func (s *sdkHttpServer) Route(method string, pattern string, handleFunc func(ctx
 	//	ctx := NewContext(writer, request)
 	//	handleFunc(ctx)
 	//})
-	key := s.handler.key(method, pattern)
-	s.handler.handlers[key] = handleFunc
+
+	//key := s.handler.key(method,pattern)
+	//s.handler.handlers[key] = handleFunc
+	s.handler.Route(method, pattern, handleFunc)
 }
 
 func (s *sdkHttpServer) Start(address string) error {
 	//handler := &HandlerBaseOnMap{}
-	//http.Handle("/", s.handler)
-	return http.ListenAndServe(address, s.handler)
+	http.Handle("/", s.handler)
+	return http.ListenAndServe(address, nil)
 }
 
 func NewHttpServer(name string) Server {
 	return &sdkHttpServer{
-		Name: name,
+		Name:    name,
+		handler: NewHandlerBasedOnMap(),
 	}
 }
 
