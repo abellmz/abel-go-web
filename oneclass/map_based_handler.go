@@ -44,7 +44,7 @@ func (h *HandlerBasedOnMap) key(method string, path string) string {
 	return fmt.Sprintf("%s#%S", method, path)
 }
 
-// 确保&HandlerBasedOnMap{} 一定实现了Handler接口
+// 确保&HandlerBasedOnMap{} 一定实现了Handler接口  断定它是否某类型的常见写法
 var _ Handler = &HandlerBasedOnMap{}
 
 func NewHandlerBasedOnMap() Handler {
