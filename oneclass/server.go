@@ -15,6 +15,7 @@ type Server interface {
 type sdkHttpServer struct {
 	Name    string
 	handler Handler
+	root    Filter
 }
 
 // Route 路由注册
@@ -30,22 +31,35 @@ func (s *sdkHttpServer) Route(method string, pattern string, handleFunc func(ctx
 }
 
 func (s *sdkHttpServer) Start(address string) error {
-	//handler := &HandlerBaseOnMap{}
-	http.Handle("/", s.handler)
+	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+		c := NewContext(writer, request)
+		s.root(c)
+	})
 	return http.ListenAndServe(address, nil)
 }
 
-func NewHttpServer(name string) Server {
-	return &sdkHttpServer{
-		Name:    name,
-		handler: NewHandlerBasedOnMap(),
+// 是否支持路由级别 有些filter只允许在user路径下使用，有些允许它在全路径下触发
+func NewHttpServer(name string, builders ...FilterBuilder) Server {
+	handler := NewHandlerBasedOnMap()
+	// 定义root的
+	var root Filter = handler.ServeHTTP
+	for i := len(builders) - 1; i >= 0; i-- {
+		b := builders[i]
+		root = b(root)
 	}
+	res := &sdkHttpServer{
+		Name:    name,
+		handler: handler,
+		root:    root,
+	}
+
+	return res
 }
 
 // func SignUp(w http.ResponseWriter, r *http.Request) {
 func SignUp(ctx *Context) {
 	req := &signUpReq{}
-	err := ctx.REadJson(req)
+	err := ctx.ReadJson(req)
 	if err != nil {
 		//fmt.Fprintf(w, "err: %v", err)
 		//return

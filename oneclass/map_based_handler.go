@@ -9,7 +9,7 @@ type Routable interface {
 	Route(method string, pattern string, handleFunc func(ctx *Context))
 }
 type Handler interface {
-	http.Handler
+	ServeHTTP(c *Context)
 	Routable
 }
 
@@ -28,15 +28,14 @@ func (h *HandlerBasedOnMap) Route(method string, pattern string, handleFunc func
 	h.handlers[key] = handleFunc
 }
 
-func (h *HandlerBasedOnMap) ServeHttp(writer http.ResponseWriter, request *http.Request) {
-	key := h.key(request.Method, request.URL.Path)
+func (h *HandlerBasedOnMap) ServeHTTP(c *Context) {
+	key := h.key(c.R.Method, c.R.URL.Path)
 	//  检测路由是否注册过
 	if handler, ok := h.handlers[key]; ok {
-		c := NewContext(writer, request)
 		handler(c)
 	} else {
-		writer.WriteHeader(http.StatusNotFound)
-		_, _ = writer.Write([]byte("not any Route match"))
+		c.W.WriteHeader(http.StatusNotFound)
+		_, _ = c.W.Write([]byte("not any Route match"))
 	}
 }
 
