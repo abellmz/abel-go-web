@@ -25,12 +25,17 @@ func Select() {
 		ch2 <- "msg from channel2"
 	}()
 
-	for {
+	//select 中case同时，顺序是没有保证的
+	//map 中，key-value 也是没有顺序保证的
+	// default 谨慎添加，因为很大可能一进入就default,底层io用的会比较多
+	for i := 0; i < 2; i++ {
 		select {
 		case msg := <-ch1:
 			fmt.Println(msg)
-		case msg := ch2:
+		case msg := <-ch2:
 			fmt.Println(msg)
+		default:
+			time.Sleep(time.Second)
 		}
 
 	}
